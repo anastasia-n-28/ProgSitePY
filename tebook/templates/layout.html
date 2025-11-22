@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TeBook{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong><a href="/drafts/">TeBook</a></strong></li>
+            </ul>
+            <ul>
+                <li><a href="/drafts/">Чернетки</a></li>
+                <li><a href="/instructions/">Інструкція</a></li>
+                {% if user and user.role in ['teacher', 'admin'] %}
+                <li><a href="/drafts/new">Нова чернетка</a></li>
+                {% endif %}
+                {% if user %}
+                <li>
+                    <form method="post" action="/login/logout">
+                        <button type="submit" class="logout-button">Вихід ({{ user.username }})</button>
+                    </form>
+                </li>
+                {% else %}
+                <li><a href="/login">Вхід</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
+

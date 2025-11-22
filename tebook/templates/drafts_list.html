@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Список чернеток - TeBook{% endblock %}
+
+{% block content %}
+<h1>Чернетки презентацій</h1>
+
+{% if is_teacher %}
+<a href="/drafts/new" role="button">Створити нову чернетку</a>
+{% else %}
+<p><em>Для створення чернеток потрібен вхід як викладач</em></p>
+{% endif %}
+
+{% if drafts %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Назва</th>
+            <th>Мова</th>
+            <th>Тип</th>
+            <th>Створено</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for draft in drafts %}
+        <tr>
+            <td>{{ draft.id }}</td>
+            <td><a href="/drafts/{{ draft.id }}">{{ draft.title }}</a></td>
+            <td>{{ draft.language }}</td>
+            <td>{{ draft.doc_type }}</td>
+            <td>{{ draft.created_at[:10] }}</td>
+            <td>
+                <a href="/drafts/{{ draft.id }}">Перегляд</a> |
+                {% if is_teacher %}
+                <a href="/drafts/{{ draft.id }}/edit">Редагувати</a> |
+                {% endif %}
+                <a href="/presentations/{{ draft.id }}?view_mode=slides">Слайди</a> |
+                <a href="/presentations/{{ draft.id }}?view_mode=document">Док (клік)</a> |
+                <a href="/presentations/{{ draft.id }}?view_mode=full-document">Док (повний)</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Чернеток поки немає.{% if is_teacher %} <a href="/drafts/new">Створіть першу!</a>{% endif %}</p>
+{% endif %}
+{% endblock %}
+

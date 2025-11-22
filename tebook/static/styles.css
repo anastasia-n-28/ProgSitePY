@@ -1,0 +1,119 @@
+/* Navigation styles */
+nav {
+    margin-bottom: 2rem;
+}
+
+nav ul li form {
+    display: inline;
+    margin: 0;
+}
+
+nav ul li form button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+    display: inline;
+}
+
+nav ul li form button.logout-button {
+    text-decoration: underline;
+}
+
+/* Actions container */
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.actions button,
+.actions a[role="button"],
+.actions form,
+.actions details {
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
+.actions button {
+    padding: 0 1rem;
+    line-height: 2.5rem;
+}
+
+.actions a[role="button"] {
+    padding: 0 1rem;
+    line-height: 2.5rem;
+    text-decoration: none;
+}
+
+.actions form button {
+    height: 100%;
+}
+
+.actions details summary {
+    height: 2.5rem;
+    line-height: 2.5rem;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+.actions details[open] summary {
+    margin-bottom: 0;
+}
+
+/* Table styles */
+table td {
+    vertical-align: middle;
+}
+
+table td a {
+    display: inline-block;
+    margin: 0 0.25rem;
+}
+
+/* Textarea styles */
+textarea {
+    min-height: 400px;
+    font-family: monospace;
+}
+
+/* Form styles */
+.required-marker {
+    color: red;
+}
+
+.details-margin {
+    margin-top: 1rem;
+}
+
+.details-margin ul {
+    margin-top: 0.5rem;
+}
+
+/* Inline form styles */
+.inline-form {
+    display: inline;
+}
+
+/* Code block styles */
+.code-block {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+}
+
+/* Button width styles */
+.button-auto {
+    width: auto;
+}
+

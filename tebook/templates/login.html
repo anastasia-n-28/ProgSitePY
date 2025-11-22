@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Вхід - TeBook{% endblock %}
+
+{% block content %}
+<h1>Вхід до системи</h1>
+
+<form method="post" action="/login">
+    <label for="username">
+        Логін
+        <input type="text" id="username" name="username" required>
+    </label>
+    
+    <label for="password">
+        Пароль
+        <input type="password" id="password" name="password" required>
+    </label>
+    
+    <button type="submit">Увійти</button>
+</form>
+
+<small>
+    <strong>Тестові користувачі:</strong><br>
+    admin / 123456 (адміністратор)<br>
+    teacher / 123456 (викладач)<br>
+    student / 123456 (студент)
+</small>
+{% endblock %}
+

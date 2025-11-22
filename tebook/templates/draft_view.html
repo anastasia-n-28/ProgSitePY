@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ draft.title }} - TeBook{% endblock %}
+
+{% block content %}
+<h1>{{ draft.title }}</h1>
+
+<div class="actions">
+    {% if is_teacher %}
+    <a href="/drafts/{{ draft.id }}/edit" role="button">Редагувати</a>
+    <form method="post" action="/drafts/{{ draft.id }}/delete" class="inline-form">
+        <button type="submit" class="contrast" onclick="return confirm('Ви впевнені?')">Видалити</button>
+    </form>
+    {% endif %}
+    <a href="/presentations/{{ draft.id }}?view_mode=slides" role="button" class="secondary">Презентація (слайди)</a>
+    <a href="/presentations/{{ draft.id }}?view_mode=document" role="button" class="secondary">Презентація (документ)</a>
+    <a href="/presentations/{{ draft.id }}?view_mode=full-document" role="button" class="secondary">Документ (повний)</a>
+</div>
+
+<article>
+    <h2>Інформація</h2>
+    <p><strong>Мова програмування:</strong> {{ draft.language }}</p>
+    <p><strong>Тип документа:</strong> {{ draft.doc_type }}</p>
+    <p><strong>Створено:</strong> {{ draft.created_at }}</p>
+    <p><strong>Оновлено:</strong> {{ draft.updated_at }}</p>
+</article>
+
+<article>
+    <h2>Вміст чернетки</h2>
+    <pre class="code-block"><code>{{ draft.content }}</code></pre>
+</article>
+{% endblock %}
+

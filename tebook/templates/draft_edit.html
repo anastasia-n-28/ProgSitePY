@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ action }} чернетку - TeBook{% endblock %}
+
+{% block content %}
+<h1>{{ action }} чернетку</h1>
+
+<form method="post" action="{% if draft %}/drafts/{{ draft.id }}{% else %}/drafts/{% endif %}">
+    <label for="title">
+        Назва
+        <input type="text" id="title" name="title" value="{% if draft %}{{ draft.title }}{% endif %}" required>
+    </label>
+    
+    <label for="language">
+        Мова програмування
+        <select id="language" name="language">
+            <option value="python" {% if draft and draft.language == 'python' %}selected{% endif %}>Python</option>
+            <option value="javascript" {% if draft and draft.language == 'javascript' %}selected{% endif %}>JavaScript</option>
+            <option value="java" {% if draft and draft.language == 'java' %}selected{% endif %}>Java</option>
+            <option value="cpp" {% if draft and draft.language == 'cpp' %}selected{% endif %}>C++</option>
+            <option value="csharp" {% if draft and draft.language == 'csharp' %}selected{% endif %}>C#</option>
+        </select>
+    </label>
+    
+    <fieldset>
+        <legend>Типи документів <span class="required-marker">*</span></legend>
+        <label>
+            <input type="checkbox" name="doc_types" value="html-stu" {% if draft and draft.doc_type == 'html-stu' %}checked{% endif %} required>
+            HTML (студентський)
+        </label>
+        <label>
+            <input type="checkbox" name="doc_types" value="html-tut" {% if draft and draft.doc_type == 'html-tut' %}checked{% endif %}>
+            HTML (викладацький)
+        </label>
+        <label>
+            <input type="checkbox" name="doc_types" value="md" {% if draft and draft.doc_type == 'md' %}checked{% endif %}>
+            Markdown
+        </label>
+        <small>Оберіть хоча б один формат. Можна вибрати кілька форматів - для кожного буде створена окрема чернетка.</small>
+        <details class="details-margin">
+            <summary>Опис типів документів</summary>
+            <ul>
+                <li><strong>HTML студентський</strong> - спрощений формат для студентів, мінімальне форматування, прості кольори та стилі, базові можливості відображення, призначений для швидкого перегляду.</li>
+                <li><strong>HTML викладацький</strong> - розширений формат для викладачів, градієнтні фони та тіні, покращена типографіка, анімації та ефекти наведення, професійне оформлення, додаткові візуальні ефекти.</li>
+                <li><strong>Markdown</strong> - текстовий формат для експорту та подальшої обробки, зручний для конвертації в інші формати.</li>
+            </ul>
+        </details>
+    </fieldset>
+    
+    <fieldset>
+        <legend>Режими презентації</legend>
+        <label>
+            <input type="checkbox" name="view_modes" value="slides" checked>
+            Слайди (з навігацією)
+        </label>
+        <label>
+            <input type="checkbox" name="view_modes" value="document" checked>
+            Документ (з'являються по кліку)
+        </label>
+        <label>
+            <input type="checkbox" name="view_modes" value="full-document" checked>
+            Документ (повний)
+        </label>
+        <small>Оберіть режими презентації, які будуть доступні для перегляду</small>
+    </fieldset>
+    
+    <label for="content">
+        Вміст чернетки
+        <textarea id="content" name="content" required>{% if draft %}{{ draft.content }}{% endif %}</textarea>
+        <small>Використовуйте маркери @1-@7 для позначення типів слайдів. Рядки з @@ - коментарі.</small>
+    </label>
+    
+    <div class="actions">
+        <button type="submit" class="button-auto">{{ action }}</button>
+        <a href="{% if draft %}/drafts/{{ draft.id }}{% else %}/drafts/{% endif %}" role="button" class="secondary button-auto">Скасувати</a>
+    </div>
+</form>
+
+<script>
+    // Валідація: хоча б один формат має бути обраний
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="doc_types"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Будь ласка, оберіть хоча б один тип документа');
+            return false;
+        }
+    });
+</script>
+{% endblock %}
+
