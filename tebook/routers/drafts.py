@@ -80,9 +80,13 @@ async def create_draft_post(request: Request,
     """Створює нову чернетку (тільки для викладачів)"""
     form_data = await request.form()
     doc_types = form_data.getlist("doc_types")
+    view_modes_list = form_data.getlist("view_modes")
     
     if not doc_types:
         raise HTTPException(status_code=400, detail="Оберіть хоча б один тип документа")
+    
+    # Якщо view_modes не обрані, використовуємо всі за замовчуванням
+    view_modes_str = ",".join(view_modes_list) if view_modes_list else None
     
     valid_formats = ["html-stu", "html-tut", "md"]
     created_drafts = []
@@ -101,7 +105,7 @@ async def create_draft_post(request: Request,
             else:
                 draft_title = title
             
-            draft = create_draft(draft_title, content, language, doc_type)
+            draft = create_draft(draft_title, content, language, doc_type, view_modes_str)
             created_drafts.append(draft)
     
     if not created_drafts:
@@ -154,15 +158,19 @@ async def update_draft_post(request: Request, draft_id: int,
 
     form_data = await request.form()
     doc_types = form_data.getlist("doc_types")
+    view_modes_list = form_data.getlist("view_modes")
     
     if not doc_types:
         raise HTTPException(status_code=400, detail="Оберіть хоча б один тип документа")
+    
+    # Якщо view_modes не обрані, використовуємо всі за замовчуванням
+    view_modes_str = ",".join(view_modes_list) if view_modes_list else None
     
     valid_formats = ["html-stu", "html-tut", "md"]
     current_format = original.doc_type
 
     if current_format in doc_types:
-        draft = update_draft(draft_id, title, content, language, None)
+        draft = update_draft(draft_id, title, content, language, None, view_modes_str)
         if not draft:
             raise HTTPException(status_code=404, detail="Чернетку не знайдено")
 
@@ -171,7 +179,7 @@ async def update_draft_post(request: Request, draft_id: int,
                 duplicate_draft(draft_id, doc_type)
     else:
         new_format = doc_types[0] if doc_types else current_format
-        draft = update_draft(draft_id, title, content, language, new_format)
+        draft = update_draft(draft_id, title, content, language, new_format, view_modes_str)
         if not draft:
             raise HTTPException(status_code=404, detail="Чернетку не знайдено")
 

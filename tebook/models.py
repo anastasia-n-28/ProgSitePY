@@ -24,6 +24,7 @@ class Draft(Base):
     content: Mapped[str] = mapped_column(Text)
     language: Mapped[str] = mapped_column(String(20), default="python")
     doc_type: Mapped[str] = mapped_column(String(20), default="html-stu")
+    view_modes: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     created_at: Mapped[str] = mapped_column(String(50))
     updated_at: Mapped[str] = mapped_column(String(50))
 

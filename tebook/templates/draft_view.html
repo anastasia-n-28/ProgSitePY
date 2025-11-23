@@ -12,9 +12,16 @@
         <button type="submit" class="contrast" onclick="return confirm('Ви впевнені?')">Видалити</button>
     </form>
     {% endif %}
+    {% set view_modes_list = (draft.view_modes.split(',') if draft.view_modes else ['slides', 'document', 'full-document']) %}
+    {% if 'slides' in view_modes_list %}
     <a href="/presentations/{{ draft.id }}?view_mode=slides" role="button" class="secondary">Презентація (слайди)</a>
+    {% endif %}
+    {% if 'document' in view_modes_list %}
     <a href="/presentations/{{ draft.id }}?view_mode=document" role="button" class="secondary">Презентація (документ)</a>
+    {% endif %}
+    {% if 'full-document' in view_modes_list %}
     <a href="/presentations/{{ draft.id }}?view_mode=full-document" role="button" class="secondary">Документ (повний)</a>
+    {% endif %}
 </div>
 
 <article>

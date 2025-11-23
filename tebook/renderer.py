@@ -6,27 +6,27 @@ from .slide import Slide
 def render_html(slides: List[Slide], language: str = "python", doc_type: str = "html-stu", view_mode: str = "slides") -> str:
     """
     Генерує HTML презентацію зі списку слайдів.
-    
+
     Args:
         slides: Список слайдів
         language: Мова програмування для підсвітки коду
         doc_type: Тип документа (html-stu, html-tut, md)
-        view_mode: Режим відображення 
+        view_mode: Режим відображення
             - "slides" - слайди з навігацією
             - "document" - документ з блоків (з'являються по кліку)
             - "full-document" - повний документ (всі слайди відразу)
     """
     if doc_type == "md":
         return render_markdown(slides)
-    
+
     # Режим повного документа - всі слайди відразу
     if view_mode == "full-document":
         return render_html_full_document(slides, language, doc_type)
-    
+
     # Режим документа - всі слайди один за одним (з'являються по кліку)
     if view_mode == "document":
         return render_html_document(slides, language, doc_type)
-    
+
     # Режим слайдів - з навігацією
     return render_html_slides(slides, language, doc_type)
 
@@ -75,7 +75,7 @@ def render_html_slides(slides: List[Slide], language: str = "python", doc_type: 
     html_parts.append("        .color-btn.active { border-color: #0066cc; border-width: 3px; }")
     html_parts.append("        .eraser-btn { width: 30px; height: 30px; border: 2px solid #333; border-radius: 4px; cursor: pointer; background: white; display: flex; align-items: center; justify-content: center; font-size: 18px; }")
     html_parts.append("        .eraser-btn.active { border-color: #0066cc; border-width: 3px; background: #f0f0f0; }")
-    
+
     # Додаткові стилі для викладацького формату
     if doc_type == "html-tut":
         html_parts.append("        /* Викладацький формат - розширені стилі */")
@@ -90,7 +90,7 @@ def render_html_slides(slides: List[Slide], language: str = "python", doc_type: 
         html_parts.append("        .slide table th { background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%); color: white; font-weight: bold; }")
         html_parts.append("        .slide table tr:nth-child(even) { background: #f5f5f5; }")
         html_parts.append("        .slide table tr:hover { background: #e3f2fd; transition: background 0.3s; }")
-    
+
     html_parts.append("    </style>")
     html_parts.append("</head>")
     html_parts.append("<body>")
@@ -104,29 +104,29 @@ def render_html_slides(slides: List[Slide], language: str = "python", doc_type: 
     html_parts.append("            <div class='color-btn' data-color='#0000ff' style='background: #0000ff;' title='Синій'></div>")
     html_parts.append("            <div class='color-btn' data-color='#00ff00' style='background: #00ff00;' title='Зелений'></div>")
     html_parts.append("            <div class='color-btn' data-color='#ffff00' style='background: #ffff00;' title='Жовтий'></div>")
-    html_parts.append("            <div class='color-btn' data-color='#ff00ff' style='background: #ff00ff;' title='Пурпурний'></div>")
-    html_parts.append("            <div class='color-btn' data-color='#ffffff' style='background: #ffffff;' title='Білий'></div>")
+    html_parts.append( "            <div class='color-btn' data-color='#ff00ff' style='background: #ff00ff;' title='Пурпурний'></div>")
+    html_parts.append( "            <div class='color-btn' data-color='#ffffff' style='background: #ffffff;' title='Білий'></div>")
     html_parts.append("            <div class='eraser-btn' id='eraserBtn' title='Ластик'>🧹</div>")
     html_parts.append("        </div>")
     html_parts.append("    </div>")
     html_parts.append("    <div class='container'>")
-    
+
     # Генеруємо слайди
     for i, slide in enumerate(slides):
         slide_class = "slide" + (" active" if i == 0 else "")
         html_parts.append(f"        <div class='{slide_class}' id='slide-{i}'>")
         html_parts.append(render_slide_content(slide))
         html_parts.append("        </div>")
-    
+
     html_parts.append("    </div>")
-    
+
     # Навігація
     html_parts.append("    <div class='navigation'>")
     html_parts.append("        <button onclick='previousSlide()'>← Попередній</button>")
     html_parts.append("        <button onclick='nextSlide()'>Наступний →</button>")
     html_parts.append("    </div>")
     html_parts.append(f"    <div class='slide-counter' id='counter'>1 / {len(slides)}</div>")
-    
+
     # JS для навігації та малювання
     html_parts.append("    <script>")
     html_parts.append("        let currentSlide = 0;")
@@ -263,7 +263,7 @@ def render_html_slides(slides: List[Slide], language: str = "python", doc_type: 
     html_parts.append("    </script>")
     html_parts.append("</body>")
     html_parts.append("</html>")
-    
+
     return '\n'.join(html_parts)
 
 
@@ -276,13 +276,13 @@ def render_slide_content(slide: Slide) -> str:
         if not content:
             return "            <h1>Заголовок</h1>"
         return f"            <h1>{process_text(content)}</h1>"
-    
+
     elif slide.slide_type == "@2":
         # Підзаголовок
         if not content:
             return "            <h2>Підзаголовок</h2>"
         return f"            <h2>{process_text(content)}</h2>"
-    
+
     elif slide.slide_type == "@3":
         # Основний текст з підтримкою стилів
         if not content:
@@ -291,32 +291,32 @@ def render_slide_content(slide: Slide) -> str:
         # Латинські слова - курсив
         processed = process_latin_italic(processed)
         return f"            <div>{processed}</div>"
-    
+
     elif slide.slide_type == "@4":
         # Визначення (в рамці)
         if not content:
             return "            <div class='definition'></div>"
         processed = process_text(content)
         return f"            <div class='definition'>{processed}</div>"
-    
+
     elif slide.slide_type == "@5":
         # Багаторядковий код
         code_content = content.strip() if content else ""
         return f"            <pre><code>{escape_html(code_content)}</code></pre>"
-    
+
     elif slide.slide_type == "@6":
         # Задача
         if not content:
             return "            <div class='task'>Задача</div>"
         processed = process_text(content)
         return f"            <div class='task'>{processed}</div>"
-    
+
     elif slide.slide_type == "@7":
         # Таблиця (CSV)
         if not content:
             return "            <div class='table-container'><p>Порожня таблиця</p></div>"
         return render_table(content)
-    
+
     return f"            <div>{process_text(content) if content else ''}</div>"
 
 
@@ -329,27 +329,28 @@ def process_text(text: str) -> str:
     """
     # Подвійні фігурні дужки - код
     text = re.sub(r'\{\{([^}]+)\}\}', r'<code>\1</code>', text)
-    
+
     # Одинарні фігурні дужки - виділений текст
     text = re.sub(r'\{([^}]+)\}', r'<strong>\1</strong>', text)
-    
+
     # Подвійні квадратні дужки - посилання/зображення
     def process_link(match):
         link = match.group(1)
         if link.startswith('http://') or link.startswith('https://'):
             return f'<a href="{link}" target="_blank">{link}</a>'
         return f'<img src="{link}" alt="{link}">'
-    
+
     text = re.sub(r'\[\[([^\]]+)\]\]', process_link, text)
-    
+
     # Замінюємо переноси рядків на <br>
     text = text.replace('\n', '<br>')
-    
+
     return text
 
 
 def process_latin_italic(text: str) -> str:
     """Перетворює латинські слова на курсив"""
+
     def italicize_latin(match):
         word = match.group(0)
         return f'<span class="italic">{word}</span>'
@@ -363,9 +364,9 @@ def render_table(csv_content: str) -> str:
     lines = [line.strip() for line in csv_content.strip().split('\n') if line.strip()]
     if not lines:
         return "            <div>Порожня таблиця</div>"
-    
+
     html_parts = ["            <div class='table-container'>", "                <table>"]
-    
+
     for i, line in enumerate(lines):
         cells = [cell.strip() for cell in line.split(',')]
         tag = 'th' if i == 0 else 'td'
@@ -373,10 +374,10 @@ def render_table(csv_content: str) -> str:
         for cell in cells:
             html_parts.append(f"                        <{tag}>{escape_html(cell)}</{tag}>")
         html_parts.append("                    </tr>")
-    
+
     html_parts.append("                </table>")
     html_parts.append("            </div>")
-    
+
     return '\n'.join(html_parts)
 
 
@@ -384,6 +385,7 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     """
     Генерує HTML документ зі слайдів (всі слайди один за одним, як блоки).
     Спочатку показується перший слайд, далі з'являються наступні при прокрутці.
+    Вирівнювання по лівому краю.
     """
     html_parts = []
     html_parts.append("<!DOCTYPE html>")
@@ -395,21 +397,28 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     html_parts.append("    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css'>")
     html_parts.append("    <style>")
     html_parts.append("        body { position: relative; margin: 0; padding: 0; }")
-    html_parts.append("        .document-container { max-width: 900px; margin: 0 auto; padding: 2rem; }")
-    html_parts.append("        .slide-block { margin-bottom: 3rem; padding: 2rem; border-left: 4px solid #0066cc; background: #f8f9fa; border-radius: 0.5rem; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; display: none; text-align: center; }")
+    html_parts.append("        .document-container { max-width: 900px; margin: 0 auto; padding: 2rem; text-align: left; }")
+    html_parts.append("        ")
+    html_parts.append("        .slide-block { margin-bottom: 3rem; padding: 2rem; border-left: 4px solid #0066cc; background: #f8f9fa; border-radius: 0.5rem; text-align: left; }")
+    html_parts.append("        ")
+    html_parts.append("        .slide-block { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; display: none; }")
     html_parts.append("        .slide-block.visible { opacity: 1; transform: translateY(0); display: block; }")
-    html_parts.append("        .slide-block h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #0066cc; text-align: center; }")
-    html_parts.append("        .slide-block h2 { font-size: 2rem; margin-bottom: 1rem; color: #0066cc; text-align: center; }")
+    html_parts.append("        ")
+    html_parts.append("        .slide-block h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #0066cc; text-align: left; }")
+    html_parts.append("        .slide-block h2 { font-size: 2rem; margin-bottom: 1rem; color: #0066cc; text-align: left; }")
+    html_parts.append("        .slide-block p, .slide-block div { text-align: left; }")
+    html_parts.append("        ")
     html_parts.append("        .slide-block code { background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }")
-    html_parts.append("        .slide-block pre { background: #e9ecef; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }")
-    html_parts.append("        .slide-block .definition { border: 2px solid #333; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; background: white; }")
-    html_parts.append("        .slide-block .task { background: #fff3cd; padding: 1rem; border-left: 4px solid #ffc107; margin: 1rem 0; }")
+    html_parts.append("        .slide-block pre { background: #e9ecef; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; text-align: left; }")
+    html_parts.append("        .slide-block .definition { border: 2px solid #333; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; background: white; text-align: left; }")
+    html_parts.append("        .slide-block .task { background: #fff3cd; padding: 1rem; border-left: 4px solid #ffc107; margin: 1rem 0; text-align: left; }")
     html_parts.append("        .slide-block .table-container { overflow-x: auto; margin: 1rem 0; }")
     html_parts.append("        .slide-block table { width: 100%; border-collapse: collapse; }")
-    html_parts.append("        .slide-block table th, .slide-block table td { border: 1px solid #ddd; padding: 0.5rem; }")
+    html_parts.append("        .slide-block table th, .slide-block table td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }")
     html_parts.append("        .slide-block table th { background: #e9ecef; }")
     html_parts.append("        .slide-block .italic { font-style: italic; }")
     html_parts.append("        .slide-block img { max-width: 100%; height: auto; }")
+    html_parts.append("        ")
     html_parts.append("        #drawingCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 500; pointer-events: none; }")
     html_parts.append("        #drawingCanvas.drawing { pointer-events: all; }")
     html_parts.append("        .drawing-toggle-btn { position: fixed; top: 2rem; right: 2rem; z-index: 1001; width: 50px; height: 50px; border-radius: 50%; background: #0066cc; color: white; border: none; cursor: pointer; font-size: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }")
@@ -422,7 +431,7 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     html_parts.append("        .color-btn.active { border-color: #0066cc; border-width: 3px; }")
     html_parts.append("        .eraser-btn { width: 30px; height: 30px; border: 2px solid #333; border-radius: 4px; cursor: pointer; background: white; display: flex; align-items: center; justify-content: center; font-size: 18px; }")
     html_parts.append("        .eraser-btn.active { border-color: #0066cc; border-width: 3px; background: #f0f0f0; }")
-    
+
     # Додаткові стилі для викладацького формату
     if doc_type == "html-tut":
         html_parts.append("        /* Викладацький формат - розширені стилі */")
@@ -447,21 +456,21 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     html_parts.append("            <div class='color-btn' data-color='#0000ff' style='background: #0000ff;' title='Синій'></div>")
     html_parts.append("            <div class='color-btn' data-color='#00ff00' style='background: #00ff00;' title='Зелений'></div>")
     html_parts.append("            <div class='color-btn' data-color='#ffff00' style='background: #ffff00;' title='Жовтий'></div>")
-    html_parts.append("            <div class='color-btn' data-color='#ff00ff' style='background: #ff00ff;' title='Пурпурний'></div>")
+    html_parts.append( "            <div class='color-btn' data-color='#ff00ff' style='background: #ff00ff;' title='Пурпурний'></div>")
     html_parts.append("            <div class='color-btn' data-color='#ffffff' style='background: #ffffff;' title='Білий'></div>")
     html_parts.append("            <div class='eraser-btn' id='eraserBtn' title='Ластик'>🧹</div>")
     html_parts.append("        </div>")
     html_parts.append("    </div>")
     html_parts.append("    <div class='document-container'>")
-    
+
     # Генеруємо слайди як блоки
     for i, slide in enumerate(slides):
         html_parts.append(f"        <div class='slide-block' id='block-{i}'>")
         html_parts.append(render_slide_content(slide))
         html_parts.append("        </div>")
-    
+
     html_parts.append("    </div>")
-    
+
     # JS для показу блоків по кліку
     html_parts.append("    <script>")
     html_parts.append("        const blocks = document.querySelectorAll('.slide-block');")
@@ -487,7 +496,7 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     html_parts.append("        document.body.addEventListener('click', (e) => {")
     html_parts.append("            // Не показуємо наступний блок, якщо клікнули на посилання, кнопку, input, textarea, canvas")
     html_parts.append("            const tag = e.target.tagName;")
-    html_parts.append("            if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'CANVAS') return;")
+    html_parts.append( "            if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'CANVAS') return;")
     html_parts.append("            // Перевіряємо, чи клікнули на батьківський елемент з посиланням, кнопкою або canvas")
     html_parts.append("            if (e.target.closest('a') || e.target.closest('button') || e.target.closest('canvas')) return;")
     html_parts.append("            showNextBlock();")
@@ -623,7 +632,7 @@ def render_html_document(slides: List[Slide], language: str = "python", doc_type
     html_parts.append("    </script>")
     html_parts.append("</body>")
     html_parts.append("</html>")
-    
+
     return '\n'.join(html_parts)
 
 
@@ -654,7 +663,7 @@ def render_html_full_document(slides: List[Slide], language: str = "python", doc
     html_parts.append("        .slide-block table th { background: #e9ecef; }")
     html_parts.append("        .slide-block .italic { font-style: italic; }")
     html_parts.append("        .slide-block img { max-width: 100%; height: auto; }")
-    
+
     # Додаткові стилі для викладацького формату
     if doc_type == "html-tut":
         html_parts.append("        /* Викладацький формат - розширені стилі */")
@@ -666,29 +675,29 @@ def render_html_full_document(slides: List[Slide], language: str = "python", doc
         html_parts.append("        .slide-block code { background: #263238; color: #aed581; font-weight: bold; }")
         html_parts.append("        .slide-block pre { background: #263238; color: #aed581; border: 2px solid #37474f; }")
         html_parts.append("        .slide-block table { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }")
-    
+
     html_parts.append("    </style>")
     html_parts.append("</head>")
     html_parts.append("<body>")
     html_parts.append("    <div class='document-container'>")
-    
+
     # Генеруємо всі слайди одразу
     for i, slide in enumerate(slides):
         html_parts.append(f"        <div class='slide-block' id='block-{i}'>")
         html_parts.append(render_slide_content(slide))
         html_parts.append("        </div>")
-    
+
     html_parts.append("    </div>")
     html_parts.append("</body>")
     html_parts.append("</html>")
-    
+
     return '\n'.join(html_parts)
 
 
 def render_markdown(slides: List[Slide]) -> str:
     """Генерує Markdown презентацію"""
     md_parts = []
-    
+
     for slide in slides:
         if slide.slide_type == "@1":
             md_parts.append(f"# {slide.content}\n")
@@ -705,14 +714,14 @@ def render_markdown(slides: List[Slide]) -> str:
         elif slide.slide_type == "@7":
             md_parts.append(f"{slide.content}\n")
         md_parts.append("\n---\n\n")
-    
+
     return ''.join(md_parts)
 
 
 def escape_html(text: str) -> str:
     """Екранує HTML символи"""
     return (text.replace('&', '&amp;')
-                .replace('<', '&lt;')
-                .replace('>', '&gt;')
-                .replace('"', '&quot;')
-                .replace("'", '&#39;'))
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;')
+            .replace("'", '&#39;'))

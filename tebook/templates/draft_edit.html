@@ -25,7 +25,7 @@
     <fieldset>
         <legend>Типи документів <span class="required-marker">*</span></legend>
         <label>
-            <input type="checkbox" name="doc_types" value="html-stu" {% if draft and draft.doc_type == 'html-stu' %}checked{% endif %} required>
+            <input type="checkbox" name="doc_types" value="html-stu" {% if draft and draft.doc_type == 'html-stu' %}checked{% endif %}>
             HTML (студентський)
         </label>
         <label>
@@ -49,16 +49,17 @@
     
     <fieldset>
         <legend>Режими презентації</legend>
+        {% set view_modes_list = (draft.view_modes.split(',') if draft and draft.view_modes else ['slides', 'document', 'full-document']) %}
         <label>
-            <input type="checkbox" name="view_modes" value="slides" checked>
+            <input type="checkbox" name="view_modes" value="slides" {% if 'slides' in view_modes_list %}checked{% endif %}>
             Слайди (з навігацією)
         </label>
         <label>
-            <input type="checkbox" name="view_modes" value="document" checked>
+            <input type="checkbox" name="view_modes" value="document" {% if 'document' in view_modes_list %}checked{% endif %}>
             Документ (з'являються по кліку)
         </label>
         <label>
-            <input type="checkbox" name="view_modes" value="full-document" checked>
+            <input type="checkbox" name="view_modes" value="full-document" {% if 'full-document' in view_modes_list %}checked{% endif %}>
             Документ (повний)
         </label>
         <small>Оберіть режими презентації, які будуть доступні для перегляду</small>
@@ -67,18 +68,83 @@
     <label for="content">
         Вміст чернетки
         <textarea id="content" name="content" required>{% if draft %}{{ draft.content }}{% endif %}</textarea>
-        <small>Використовуйте маркери @1-@7 для позначення типів слайдів. Рядки з @@ - коментарі.</small>
+        <details class="details-margin">
+            <summary>Використовуйте маркери @1-@7 для позначення типів слайдів. Рядки з @@ - коментарі.</summary>
+            <ul>
+                <li><strong>@1</strong> - Заголовок презентації або її частини</li>
+                <li><strong>@2</strong> - Підзаголовок</li>
+                <li><strong>@3</strong> - Основний текст (підтримує стилі)</li>
+                <li><strong>@4</strong> - Визначення (в рамці)</li>
+                <li><strong>@5</strong> - Багаторядковий фрагмент програмного коду</li>
+                <li><strong>@6</strong> - Задача</li>
+                <li><strong>@7</strong> - Таблиця (CSV формат)</li>
+                <li><strong>Стилі в слайді @3:</strong></li>
+                <li><strong>{ { код } }</strong> - рядок програмного коду (*без пробілів)</li>
+                <li><strong>{виділений}</strong> - виділений текст</li>
+                <li><strong>[[посилання]]</strong> - посилання або зображення</li>
+                <li><strong>Латинські слова</strong> автоматично стають курсивом</li>
+            </ul>
+        </details>
     </label>
     
     <div class="actions">
-        <button type="submit" class="button-auto">{{ action }}</button>
-        <a href="{% if draft %}/drafts/{{ draft.id }}{% else %}/drafts/{% endif %}" role="button" class="secondary button-auto">Скасувати</a>
+        <button type="submit">{{ action }}</button>
+        <a href="{% if draft %}/drafts/{{ draft.id }}{% else %}/drafts/{% endif %}" role="button" class="secondary">Скасувати</a>
     </div>
 </form>
 
 <script>
+    let formChanged = false;
+    let initialFormState = '';
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, textarea, select');
+
+    function saveInitialState() {
+        const formData = new FormData(form);
+        initialFormState = Array.from(formData.entries()).sort().toString();
+    }
+
+    function checkFormChanged() {
+        const formData = new FormData(form);
+        const currentState = Array.from(formData.entries()).sort().toString();
+        return currentState !== initialFormState;
+    }
+
+    saveInitialState();
+    
+    // Відстеження змін у формі
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            formChanged = checkFormChanged();
+        });
+        input.addEventListener('input', function() {
+            formChanged = checkFormChanged();
+        });
+    });
+    
+
+    const beforeUnloadHandler = function(e) {
+        if (formChanged || checkFormChanged()) {
+            // Стандартний спосіб для сучасних браузерів
+            e.preventDefault();
+            // Для сумісності зі старими браузерами
+            e.returnValue = '';
+            return '';
+        }
+    };
+    
+    // Додаємо обробник тільки якщо підтримується
+    if (typeof window.addEventListener !== 'undefined') {
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+    }
+    
+    form.addEventListener('submit', function() {
+        formChanged = false;
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+    });
+    
     // Валідація: хоча б один формат має бути обраний
-    document.querySelector('form').addEventListener('submit', function(e) {
+    form.addEventListener('submit', function(e) {
         const checkboxes = document.querySelectorAll('input[name="doc_types"]:checked');
         if (checkboxes.length === 0) {
             e.preventDefault();
@@ -86,6 +152,38 @@
             return false;
         }
     });
+
+    const cancelButton = document.querySelector('a[role="button"].secondary');
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function(e) {
+            if (formChanged || checkFormChanged()) {
+                if (!confirm('У вас є незбережені зміни. Ви впевнені, що хочете покинути сторінку?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            formChanged = false;
+        });
+    }
+
+    // Перехоплення кліків по навігаційних посиланнях
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:') && link.getAttribute('href') !== '#') {
+            // Перевіряємо, чи це не кнопка скасування (вона вже обробляється окремо)
+            if (link.classList.contains('secondary') && link.getAttribute('role') === 'button') {
+                return;
+            }
+            
+            if (formChanged || checkFormChanged()) {
+                if (!confirm('У вас є незбережені зміни. Ви впевнені, що хочете покинути сторінку?')) {
+                    e.preventDefault();
+                    return false;
+                }
+                formChanged = false;
+            }
+        }
+    }, true);
 </script>
 {% endblock %}
 

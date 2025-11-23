@@ -14,7 +14,7 @@ def init_db():
 
 
 # CRUD операції для чернеток
-def create_draft(title: str, content: str, language: str = "python", doc_type: str = "html-stu") -> Draft:
+def create_draft(title: str, content: str, language: str = "python", doc_type: str = "html-stu", view_modes: Optional[str] = None) -> Draft:
     """Створює нову чернетку"""
     now = dt.datetime.now().isoformat()
     draft = Draft(
@@ -22,6 +22,7 @@ def create_draft(title: str, content: str, language: str = "python", doc_type: s
         content=content,
         language=language,
         doc_type=doc_type,
+        view_modes=view_modes,
         created_at=now,
         updated_at=now
     )
@@ -45,7 +46,7 @@ def get_all_drafts() -> List[Draft]:
 
 
 def update_draft(draft_id: int, title: Optional[str] = None, content: Optional[str] = None,
-                 language: Optional[str] = None, doc_type: Optional[str] = None) -> Optional[Draft]:
+                 language: Optional[str] = None, doc_type: Optional[str] = None, view_modes: Optional[str] = None) -> Optional[Draft]:
     """Оновлює чернетку"""
     with Session(engine) as db:
         draft = db.get(Draft, draft_id)
@@ -60,6 +61,8 @@ def update_draft(draft_id: int, title: Optional[str] = None, content: Optional[s
             draft.language = language
         if doc_type is not None:
             draft.doc_type = doc_type
+        if view_modes is not None:
+            draft.view_modes = view_modes
         
         draft.updated_at = dt.datetime.now().isoformat()
         db.commit()
@@ -102,5 +105,6 @@ def duplicate_draft(draft_id: int, new_doc_type: str = None) -> Optional[Draft]:
         title=new_title,
         content=original.content,
         language=original.language,
-        doc_type=new_doc_type
+        doc_type=new_doc_type,
+        view_modes=original.view_modes
     )

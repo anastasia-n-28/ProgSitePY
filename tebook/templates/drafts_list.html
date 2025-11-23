@@ -32,13 +32,23 @@
             <td>{{ draft.doc_type }}</td>
             <td>{{ draft.created_at[:10] }}</td>
             <td>
-                <a href="/drafts/{{ draft.id }}">Перегляд</a> |
+                <a href="/drafts/{{ draft.id }}">Перегляд</a>
                 {% if is_teacher %}
-                <a href="/drafts/{{ draft.id }}/edit">Редагувати</a> |
+                 | <a href="/drafts/{{ draft.id }}/edit">Редагувати</a>
+                 | <a href="#" onclick="event.preventDefault(); if(confirm('Ви впевнені?')) { document.getElementById('delete-form-{{ draft.id }}').submit(); }" class="delete-link">Видалити</a>
+                 <form id="delete-form-{{ draft.id }}" method="post" action="/drafts/{{ draft.id }}/delete" style="display: none;">
+                 </form>
                 {% endif %}
-                <a href="/presentations/{{ draft.id }}?view_mode=slides">Слайди</a> |
-                <a href="/presentations/{{ draft.id }}?view_mode=document">Док (клік)</a> |
-                <a href="/presentations/{{ draft.id }}?view_mode=full-document">Док (повний)</a>
+                {% set view_modes_list = (draft.view_modes.split(',') if draft.view_modes else ['slides', 'document', 'full-document']) %}
+                {% if 'slides' in view_modes_list %}
+                 | <a href="/presentations/{{ draft.id }}?view_mode=slides">Слайди</a>
+                {% endif %}
+                {% if 'document' in view_modes_list %}
+                 | <a href="/presentations/{{ draft.id }}?view_mode=document">Док (клік)</a>
+                {% endif %}
+                {% if 'full-document' in view_modes_list %}
+                 | <a href="/presentations/{{ draft.id }}?view_mode=full-document">Док (повний)</a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -48,4 +58,3 @@
 <p>Чернеток поки немає.{% if is_teacher %} <a href="/drafts/new">Створіть першу!</a>{% endif %}</p>
 {% endif %}
 {% endblock %}
-

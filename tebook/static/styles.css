@@ -23,6 +23,13 @@ nav ul li form button {
 
 nav ul li form button.logout-button {
     text-decoration: underline;
+    color: #666;
+    background: none !important;
+    border: none !important;
+}
+
+nav ul li form button.logout-button:hover {
+    color: #333;
 }
 
 /* Actions container */
@@ -38,10 +45,14 @@ nav ul li form button.logout-button {
 .actions a[role="button"],
 .actions form,
 .actions details {
-    height: 2.5rem;
+    height: auto;
     display: inline-flex;
     align-items: center;
     margin: 0;
+    width: auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    max-width: none !important;
 }
 
 .actions button {
@@ -57,6 +68,9 @@ nav ul li form button.logout-button {
 
 .actions form button {
     height: 100%;
+    width: auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 .actions details summary {
@@ -112,8 +126,31 @@ textarea {
     overflow-x: auto;
 }
 
-/* Button width styles */
-.button-auto {
-    width: auto;
+/* Form actions - buttons in one row */
+.actions {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
 }
 
+@media (max-width: 768px) {
+    .actions {
+        flex-wrap: wrap;
+    }
+}
+
+/* Table action buttons */
+table td form {
+    display: inline;
+    margin: 0;
+}
+
+table td a.delete-link {
+    color: #d32f2f;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+table td a.delete-link:hover {
+    color: #b71c1c;
+    text-decoration: underline;
+}
